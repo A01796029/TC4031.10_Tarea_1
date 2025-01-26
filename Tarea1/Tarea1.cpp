@@ -10,7 +10,7 @@
 #define chunk 10
 #define mostrar 10
 
-void imprimeArreglos(int inicio, int fin, float* a, float* b, float* r);
+void imprimeArreglos(int inicio, float* a, float* b, float* r);
 void imprimeFila(int inicio, int fin, float* d, std::string name);
 
 int main()
@@ -46,13 +46,14 @@ int main()
 
     std::cout << "Ingresar el indice inicial para mostrar: " << std::endl;
     std::cin >> inicio;
-    imprimeArreglos(inicio, inicio + mostrar, a, b, r);
+    imprimeArreglos(inicio, a, b, r);
 }
 
-void imprimeArreglos(int inicio, int fin, float* a, float* b, float* r)
+void imprimeArreglos(int inicio, float* a, float* b, float* r)
 {
     if (inicio > N)
         inicio = N - 1;
+    int fin = inicio + mostrar;
     if (fin > N)
         fin = N;
 
