@@ -10,14 +10,15 @@
 #define chunk 10
 #define mostrar 10
 
-void imprimeArreglos(float* a, float* b, float* r);
-void imprimeFila(float* d, std::string name);
+void imprimeArreglos(int inicio, int fin, float* a, float* b, float* r);
+void imprimeFila(int inicio, int fin, float* d, std::string name);
 
 int main()
 {
     std::cout << "Sumando Arrreglos en Paralelo!\n";
+    // Declaramos las variables necesarias
     float a[N], b[N], r[N];
-    int i;
+    int i, inicio;
     float base1, base2;
     std::cout << "Ingresar base para arreglo A: ";
     std::cin >> base1;
@@ -26,40 +27,51 @@ int main()
 
     for (i = 0; i < N; i++)
     {
-        a[i] = i * base1;
-        b[i] = i * base2;
+        a[i] = (i + 1) * base1;
+        b[i] = (i + 1) * base2;
     }
     int pedazos = chunk;
 
-    #pragma omp parallel for \
-    shared(a, b, r, pedazos) private(i) \
+    // `#pragma omp parallel for` indica que el for tiene que ejecutarse
+    // de forma paralela
+    // `shared` recibe las variables "a", "b", "r" y "pedazos" para marcarlas como compartidas
+    // entre todos los hilos
+    // `schedule` se encarga de distribuir las iteraciones en los hilos
+    // el parametro "static" divide las iteraciones en bloques del mismo tamaño
+    // especificamos el tamaño con la variable "pedazos" que es igual a 10
+    #pragma omp parallel for shared(a, b, r, pedazos) private(i) \
     schedule(static, pedazos)
-
     for (i = 0; i < N; i++)
         r[i] = a[i] + b[i];
 
-    std::cout << "Imprimiendo los primeros " << mostrar << " valores de los arreglos: " << std::endl;
-    imprimeArreglos(a, b, r);
+    std::cout << "Ingresar el indice inicial para mostrar: " << std::endl;
+    std::cin >> inicio;
+    imprimeArreglos(inicio, inicio + mostrar, a, b, r);
 }
 
-void imprimeArreglos(float* a, float* b, float* r)
+void imprimeArreglos(int inicio, int fin, float* a, float* b, float* r)
 {
-    for (int x = 0; x < mostrar; x++)
+    if (inicio > N)
+        inicio = N - 1;
+    if (fin > N)
+        fin = N;
+
+    for (int x = 0; x < 10; x++)
         std::cout << "_______";
     std::cout << std::endl;
-    imprimeFila(a, "Arreglo A");
+    imprimeFila(inicio, fin, a, "Arreglo A");
 
     std::cout << std::endl;
-    imprimeFila(b, "Arreglo B");
+    imprimeFila(inicio, fin, b, "Arreglo B");
 
     std::cout << std::endl;
-    imprimeFila(r, "Arreglo R");
+    imprimeFila(inicio, fin, r, "Arreglo R");
 }
 
-void imprimeFila(float* d, std::string name)
+void imprimeFila(int inicio, int fin, float* d, std::string name)
 {
     std::cout << "| " << name << " | ";
-    for (int x = 0; x < mostrar; x++)
+    for (int x = inicio; x < fin ; x++)
         std::cout << std::setw(5) << d[x] << " | ";
     std::cout << std::endl;
 }
